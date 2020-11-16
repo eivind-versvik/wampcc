@@ -242,6 +242,10 @@ void rawsocket_protocol::io_on_read(char* src, size_t len)
 
 }
 
+std::string rawsocket_protocol::get_http_header(const char *name) const 
+{ 
+  return "";
+}
 
 void rawsocket_protocol::send_msg(const json_array& ja)
 {

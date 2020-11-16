@@ -142,6 +142,14 @@ void websocket_protocol::send_msg(const json_array& ja)
   m_socket->write(bufs, 2);
 }
 
+std::string websocket_protocol::get_http_header(const char* field) const
+{
+  if (!m_http_parser->has(field)) {
+    return "";
+  }
+  else
+    return m_http_parser->get(field);
+}
 
 const std::string& websocket_protocol::header_field(const char* field) const
 {

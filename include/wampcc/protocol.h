@@ -203,6 +203,7 @@ public:
   virtual const char* name() const = 0;
 
   virtual void send_msg(const json_array& j) = 0;
+  virtual std::string get_http_header(const char *name) const { return ""; }
 
   connect_mode mode() const { return m_mode; }
 

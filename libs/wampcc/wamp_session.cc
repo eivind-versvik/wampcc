@@ -786,11 +786,15 @@ void wamp_session::send_msg(const json_array& jv)
   m_proto->send_msg(jv);
 }
 
+std::string wamp_session::get_http_header(const char *name) const
+{
+  return m_proto->get_http_header(name);
+}
+
 
 void wamp_session::handle_HELLO(json_array& ja)
 {
   /* EV thread */
-
   std::string realm = ja.at(1).as_string();
   const json_object & authopts = ja.at(2).as_object();
 
@@ -839,14 +843,19 @@ void wamp_session::handle_HELLO(json_array& ja)
   auth_provider::mode auth_required;
   std::set<std::string> server_auth_methods;
   std::tie(auth_required,server_auth_methods) = m_auth_proivder.policy(authid, realm);
+  
+  auth_provider::http_auth_result http_result = auth_provider::http_auth_result::try_other;
+  if (m_auth_proivder.authenticate_http_auth) {
+    http_result = m_auth_proivder.authenticate_http_auth(m_realm, get_http_header("authorization"));
+  }
 
-  if (auth_required == auth_provider::mode::open)
+  if (auth_required == auth_provider::mode::open || http_result == auth_provider::http_auth_result::ok)
   {
     m_server_requires_auth = false;
     send_WELCOME();
     return;
   }
-  else if (auth_required != auth_provider::mode::authenticate)
+  else if (auth_required != auth_provider::mode::authenticate || http_result == auth_provider::http_auth_result::fail)
   {
     if (auth_required == auth_provider::mode::forbidden)
       throw auth_error(WAMP_ERROR_AUTHENTICATION_FAILED,
@@ -857,7 +866,7 @@ void wamp_session::handle_HELLO(json_array& ja)
 
   /* Attempt to find an authentication method supported by both client and
    * server. E.g., 'wampcra' or 'ticket' etc. */
-
+   
   auto client_methods = json_get_copy(authopts, "authmethods",
                                       json_value::make_array()).as_array();
   std::set<std::string> client_unique_methods;
@@ -959,6 +968,7 @@ void wamp_session::handle_CHALLENGE(json_array& ja)
 
   if (!ja[2].is_object())
     throw protocol_error("Extra must be dict");
+    
 
   const std::string& authmethod = ja[1].as_string();
   const json_object & extra = ja[2].as_object();
@@ -1055,6 +1065,7 @@ void wamp_session::handle_AUTHENTICATE(json_array& ja)
   if(m_auth_proivder.authenticate) {
     try {
       /* Custom authentication */
+      
       auto authenticated = m_auth_proivder.authenticate(m_authid.second, m_realm, authmethod,
                                                         peer_digest);
 
@@ -1067,6 +1078,7 @@ void wamp_session::handle_AUTHENTICATE(json_array& ja)
                       "error in custom authentication function");
     }
   } else {
+
     if(authmethod == WAMP_WAMPCRA) {
 
       if (m_auth_proivder.check_cra) {
@@ -2870,7 +2882,18 @@ auth_provider::authorized wamp_session::authorize(const std::string& uri, auth_p
         realm = m_realm;
         authrole = m_authrole;
       }
-      authorized = m_auth_proivder.authorize(this->unique_id(), realm, authrole, uri,  action);
+      
+      
+      auth_provider::http_authorized http_auth;
+      http_auth.try_other = true;
+      if(m_auth_proivder.authorize_http_auth)
+      {
+        http_auth = m_auth_proivder.authorize_http_auth(realm, get_http_header("authorization"), uri, action);
+        authorized = http_auth.auth;
+	  }
+
+      if(http_auth.try_other)
+        authorized = m_auth_proivder.authorize(this->unique_id(), realm, authrole, uri,  action);
     } catch(const wampcc::wamp_error&) {
           throw;
     } catch(...) {

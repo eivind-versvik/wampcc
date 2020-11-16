@@ -145,6 +145,22 @@ struct auth_provider
                             const std::string& authmethod,
                             const std::string& authprovider,
                             t_session_id session)> hello;
+                            
+  /* Optionally check if the session can be authenticated using http auth */
+  enum class http_auth_result {
+	  ok, /* is authorized */
+	  fail, /* is not authorized */
+	  try_other /* try another authorization scheme */
+  };
+  std::function<http_auth_result(const std::string& realm, const std::string &http_auth)> authenticate_http_auth;
+ 
+ 
+   struct http_authorized {
+    bool try_other;
+    authorized auth;
+  };
+  /* Check if session can be authorized using http auth */
+  std::function<http_authorized(const std::string& realm, const std::string &http_auth, const std::string& uri, action)> authorize_http_auth;
 
   /* Create an auth_provider object which implements a
    * no-authentication-required policy. */
@@ -879,6 +895,7 @@ private:
   void update_state_for_outbound(const json_array& msg);
 
   void send_msg(const json_array&);
+  std::string get_http_header(const char *name) const;
 
   void upgrade_protocol(std::unique_ptr<protocol>&);
 

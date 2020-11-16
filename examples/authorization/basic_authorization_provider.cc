@@ -16,6 +16,7 @@ using namespace std;
 int main(int, char**)
 {
   try {
+	  std::cout << "frwafwaokfokawfkopwaf" << std::endl;
     /* Create the wampcc kernel. */
 
     kernel the_kernel;
@@ -81,8 +82,33 @@ int main(int, char**)
         }
 
         return authorized;
-      }
+      },
+      nullptr,
+		nullptr,
+			[](const std::string& realm, const std::string &auth_bearer){
+				std::cout << "authentication: " << auth_bearer << std::endl;
+				return wampcc::auth_provider::http_auth_result::ok;
+			},
+			 
+			 
+			 [](const std::string& realm, const std::string &http_auth_header, const std::string& uri, auth_provider::action) {
+				 
+				 std::cout << "authorization: " << http_auth_header << std::endl;
+        
+        auth_provider::http_authorized http_auth;
+        http_auth.auth.allow = false;
+        http_auth.auth.disclose = auth_provider::disclosure::optional;
+
+        if(uri == "admin.greeting" /* && something with auth_header */) {
+          http_auth.auth.allow = true;
+        } else if (uri == "greeting") {
+          http_auth.auth.allow = true;
+        }
+
+        return http_auth;
+      },
     };
+
 
     auto fut = router.listen(auth, 55555);
 

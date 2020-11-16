@@ -57,6 +57,12 @@ int main(int argc, char** argv)
 
     /* Using the connected socket, now create the wamp session object, using
        the WebSocket protocol. */
+       
+       			wampcc::websocket_protocol::options opt;
+			opt.request_uri = "/wamp"; // TODO: is this needed for anything, routing in nginx?
+
+			std::pair<std::string, std::string> header("Authorization", "Bearer TESTTOKEN");
+			opt.extra_headers.push_back(header);
 
     std::promise<void> ready_to_exit;
     std::shared_ptr<wamp_session> session = wamp_session::create<websocket_protocol>(
@@ -68,7 +74,7 @@ int main(int argc, char** argv)
             ready_to_exit.set_value();
           }
           catch (...) { /* ignore promise already set error */ }
-      }, {});
+      }, opt);
 
     /* Logon to a WAMP realm, and wait for session to be deemed open. */
 
