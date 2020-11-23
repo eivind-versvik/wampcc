@@ -151,6 +151,11 @@ std::string websocket_protocol::get_http_header(const char* field) const
     return m_http_parser->get(field);
 }
 
+std::string websocket_protocol::get_http_url() const
+{
+  return m_http_parser->get_http_url();
+}
+
 const std::string& websocket_protocol::header_field(const char* field) const
 {
   if (!m_http_parser->has(field)) {

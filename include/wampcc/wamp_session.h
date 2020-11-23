@@ -896,6 +896,7 @@ private:
 
   void send_msg(const json_array&);
   std::string get_http_header(const char *name) const;
+  std::string get_http_url() const;
 
   void upgrade_protocol(std::unique_ptr<protocol>&);
 

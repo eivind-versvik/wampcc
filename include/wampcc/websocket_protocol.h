@@ -68,6 +68,7 @@ public:
   const char* name() const override { return NAME; }
   void send_msg(const json_array& j) override;
   std::string get_http_header(const char *name) const override;
+  std::string get_http_url() const override;
 
 private:
 

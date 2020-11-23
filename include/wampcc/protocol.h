@@ -204,6 +204,7 @@ public:
 
   virtual void send_msg(const json_array& j) = 0;
   virtual std::string get_http_header(const char *name) const { return ""; }
+  virtual std::string get_http_url() const { return ""; }
 
   connect_mode mode() const { return m_mode; }
 

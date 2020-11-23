@@ -791,6 +791,10 @@ std::string wamp_session::get_http_header(const char *name) const
   return m_proto->get_http_header(name);
 }
 
+std::string wamp_session::get_http_url() const
+{
+  return m_proto->get_http_url();
+}
 
 void wamp_session::handle_HELLO(json_array& ja)
 {
@@ -846,7 +850,7 @@ void wamp_session::handle_HELLO(json_array& ja)
   
   auth_provider::http_auth_result http_result = auth_provider::http_auth_result::try_other;
   if (m_auth_proivder.authenticate_http_auth) {
-    http_result = m_auth_proivder.authenticate_http_auth(m_realm, get_http_header("authorization"));
+    http_result = m_auth_proivder.authenticate_http_auth(m_realm, get_http_url());
   }
 
   if (auth_required == auth_provider::mode::open || http_result == auth_provider::http_auth_result::ok)
@@ -2888,7 +2892,7 @@ auth_provider::authorized wamp_session::authorize(const std::string& uri, auth_p
       http_auth.try_other = true;
       if(m_auth_proivder.authorize_http_auth)
       {
-        http_auth = m_auth_proivder.authorize_http_auth(realm, get_http_header("authorization"), uri, action);
+        http_auth = m_auth_proivder.authorize_http_auth(realm, get_http_url(), uri, action);
         authorized = http_auth.auth;
 	  }
 

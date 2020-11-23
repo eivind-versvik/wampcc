@@ -106,7 +106,11 @@ void http_parser::store_current_header_field()
 }
 
 
-int http_parser::on_url(const char* s, size_t n) { return 0; }
+int http_parser::on_url(const char* s, size_t n)
+{
+  m_url = std::string(s, n);
+  return 0; 
+}
 
 
 int http_parser::on_header_field(const char* s, size_t n)

@@ -66,6 +66,8 @@ public:
     else
       throw std::runtime_error("http header field not found");
   }
+  
+  std::string get_http_url() const { return m_url; }
 
   /* HTTP response status-line textual phrase */
   const std::string& http_status_phrase() const { return m_http_status; }
@@ -94,6 +96,8 @@ private:
 
   unsigned int m_http_status_code;
   std::string m_http_status;
+  
+  std::string m_url;
 };
 }
 

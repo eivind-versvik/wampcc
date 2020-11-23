@@ -247,6 +247,11 @@ std::string rawsocket_protocol::get_http_header(const char *name) const
   return "";
 }
 
+std::string rawsocket_protocol::get_http_url() const 
+{ 
+  return "";
+}
+
 void rawsocket_protocol::send_msg(const json_array& ja)
 {
   if (!have_codec())
