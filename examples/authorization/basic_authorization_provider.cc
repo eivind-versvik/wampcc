@@ -85,13 +85,13 @@ int main(int, char**)
       },
       nullptr,
 		nullptr,
-			[](const std::string& realm, const std::string &auth_bearer){
+			[](const std::string& realm, const std::string &http_auth_uri, const std::string &auth_bearer){
 				std::cout << "authentication: " << auth_bearer << std::endl;
 				return wampcc::auth_provider::http_auth_result::ok;
 			},
 			 
 			 
-			 [](const std::string& realm, const std::string &http_auth_header, const std::string& uri, auth_provider::action) {
+			 [](const std::string& realm, const std::string &http_auth_uri, const std::string &http_auth_header, const std::string& uri, auth_provider::action) {
 				 
 				 std::cout << "authorization: " << http_auth_header << std::endl;
         

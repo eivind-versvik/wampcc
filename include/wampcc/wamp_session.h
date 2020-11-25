@@ -152,7 +152,7 @@ struct auth_provider
 	  fail, /* is not authorized */
 	  try_other /* try another authorization scheme */
   };
-  std::function<http_auth_result(const std::string& realm, const std::string &http_auth)> authenticate_http_auth;
+  std::function<http_auth_result(const std::string& realm, const std::string &http_auth, const std::string &http_uri)> authenticate_http_auth;
  
  
    struct http_authorized {
@@ -160,7 +160,7 @@ struct auth_provider
     authorized auth;
   };
   /* Check if session can be authorized using http auth */
-  std::function<http_authorized(const std::string& realm, const std::string &http_auth, const std::string& uri, action)> authorize_http_auth;
+  std::function<http_authorized(const std::string& realm, const std::string &http_auth, const std::string &http_uri, const std::string& uri, action)> authorize_http_auth;
 
   /* Create an auth_provider object which implements a
    * no-authentication-required policy. */
