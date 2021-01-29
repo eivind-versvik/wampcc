@@ -108,7 +108,6 @@ void http_parser::store_current_header_field()
 
 int http_parser::on_url(const char* s, size_t n)
 {
-  std::cout << "url: " << std::string(s, n) << std::endl;
   m_url += std::string(s, n);
   return 0; 
 }
@@ -130,7 +129,6 @@ int http_parser::on_header_field(const char* s, size_t n)
 
 int http_parser::on_header_value(const char* s, size_t n)
 {
-  std::cout << "header value: " << std::string(s, n) << std::endl;
   if (m_state == eParsingField) {
     m_current_value = std::string(s, n);
     m_state = eParsingValue;
