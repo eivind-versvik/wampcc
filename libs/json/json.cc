@@ -153,6 +153,7 @@ valueimpl::valueimpl(json_string* a)
 
 valueimpl& valueimpl::operator=(valueimpl&& rhs) noexcept
 {
+  dispose_details(this->details);
   this->details = rhs.details;  // bitwise
   rhs.details = init_details();
   return *this;
